@@ -17,10 +17,13 @@ For example, the following block of code using a ``with`` statement...
     EXPRESSION.__enter__()
     try:
         BLOCK
-    finally:
-        EXPRESSION.__exit__(exception_type, exception_value, traceback)
+    except:
+        if not EXPRESSION.__exit__(exception_type, exception_value, traceback):
+            raise
+    else:
+        EXPRESSION.__exit__(None, None, None)
 
-In order for ``__exit__`` to work properly it must have exactly three arguments: ``exception_type``, ``exception_value``, and ``traceback``. The formal argument names in the method definition do not need to correspond directly to these names, but they must appear in this order. If any exceptions occur while attempting to execute the block of code nested after the ``with`` statement, Python will pass information about the exception into the ``__exit__`` method. You can then modify the definition of ``__exit__`` to gracefully handle each type of exception.
+In order for ``__exit__`` to work properly it must have exactly three arguments: ``exception_type``, ``exception_value``, and ``traceback``. The formal argument names in the method definition do not need to correspond directly to these names, but they must appear in this order. If any exceptions occur while attempting to execute the block of code nested after the ``with`` statement, Python will pass information about the exception into the ``__exit__`` method. If no exception occures ``__exit__`` would be called with ``None`` values for all parameters. You can then modify the definition of ``__exit__`` to gracefully handle each type of exception. If ``__exit__`` return ``False`` or any other value, converting to ``bool`` type as ``False`` - exception would be supressed. In other case exception would be processed as usually.
 
 Anti-pattern
 ------------
